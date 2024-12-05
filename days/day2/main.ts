@@ -2,8 +2,8 @@ import { slidingWindows } from "@std/collections/sliding-windows";
 import { getInputLines } from "../../lib/getInputLines.ts";
 
 const parseInput = (filename: string) =>
-  getInputLines(filename).map((line) =>
-    line.split(" ").map((num) => parseInt(num.trim()))
+  getInputLines(filename).map((row) =>
+    row.split(" ").map((num) => parseInt(num.trim()))
   );
 
 const omit = (arr: number[], index: number) => [
@@ -15,31 +15,25 @@ const isStrictlyIncreasing = (arr: number[]) =>
   slidingWindows(arr, 2).every(([first, second]) => first < second);
 
 const isStrictlyIncreasingOrDecreasing = (arr: number[]) =>
-  isStrictlyIncreasing(arr) || isStrictlyIncreasing(arr.slice().reverse());
+  isStrictlyIncreasing(arr) || isStrictlyIncreasing([...arr].reverse());
 
-const isGraduallyIncreasingOrDecreasing = (arr: number[]) =>
+const isGraduallyChanging = (arr: number[]) =>
   slidingWindows(arr, 2).every(
     ([first, second]) => Math.abs(first - second) <= 3
   );
 
-const isValidReport = (numbers: number[]) =>
-  isStrictlyIncreasingOrDecreasing(numbers) &&
-  isGraduallyIncreasingOrDecreasing(numbers);
+const isValidReport = (row: number[]) =>
+  isStrictlyIncreasingOrDecreasing(row) && isGraduallyChanging(row);
 
 const part1 = (filename: string) =>
-  parseInput(filename).map(isValidReport).filter(Boolean).length;
+  parseInput(filename).filter(isValidReport).length;
 
 const part2 = (filename: string) =>
-  parseInput(filename)
-    .map((numbers) => {
-      if (isValidReport(numbers)) return true;
-
-      const omittedPermutations = numbers.map((_, index, arr) =>
-        omit(arr, index)
-      );
-      return omittedPermutations.map(isValidReport).some(Boolean);
-    })
-    .filter(Boolean).length;
+  parseInput(filename).filter(
+    (row) =>
+      isValidReport(row) ||
+      row.some((_, index) => isValidReport(omit(row, index)))   // Check if omitting one element anywhere in the row can make it valid
+  ).length;
 
 if (import.meta.main) {
   const inputPath = `${import.meta.dirname}/input`;
