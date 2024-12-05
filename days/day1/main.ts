@@ -1,10 +1,8 @@
 import { sumOf, zip } from "@std/collections";
+import { getInputLines } from "../../lib/getInputLines.ts";
 
 function parseInput(inputFile: string) {
-  const input = Deno.readTextFileSync(inputFile);
-
-  const pairs = input
-    .split("\n")
+  const pairs = getInputLines(inputFile)
     .map((line) => /(\d+)\W+(\d+)/.exec(line))
     .map((match) => [match![1], match![2]].map((num) => parseInt(num)));
 
