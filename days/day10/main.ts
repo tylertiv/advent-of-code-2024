@@ -37,12 +37,11 @@ const countReachablePeaksFrom = (
   grid: number[][],
   { uniquePaths } = { uniquePaths: false }
 ) => {
-  const stack = [[point]];
+  const stack = [point];
   const trailEnds = [];
 
   while (stack.length > 0) {
-    const path = stack.pop()!;
-    const [{ r, c }] = path.slice(-1);
+    const { r, c } = stack.pop()!;
 
     if (grid[r][c] === 9) {
       trailEnds.push([r, c].join());
@@ -53,7 +52,7 @@ const countReachablePeaksFrom = (
         isInGrid([r + dr, c + dc], grid.length, grid[0].length) &&
         grid[r + dr][c + dc] === 1 + grid[r][c]
       )
-        stack.push([...path, { r: r + dr, c: c + dc }]);
+        stack.push({ r: r + dr, c: c + dc });
     }
   }
 
